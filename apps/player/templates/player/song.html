@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}{{ song.title }}{% endblock %}
+{% block content %}
+<div class="contain">
+  <div class="music-player" data-bs-theme="dark">
+    <div class="cover">
+      <img alt="cover-image song_image" src="{{ song.image.url }}">
+    </div>
+    <div class="titre">
+      <h3>
+        <a class='text-decoration-none text-secondary-emphasis' href="{{ song.artist.get_absolute_url }}">{{ song.artist }}</a>
+      </h3>
+      <h1 class="song_title">
+        {{ song.title }} <a href="{% url 'player:save_song' song.pk %}">{% if is_saved %}<i class="fa-solid fa-heart text-danger"></i>{% else %}<i class="fa-regular fa-heart text-danger"></i>{% endif %}</a>
+      </h1>
+    </div>
+    <div class="lecteur">
+      <audio class="fc-media" style="width: 100%;">
+        <source src="{% if song.audio_file %}{{ song.audio_file.url }}{% else %}{{ song.audio_link }}{% endif %}" type="audio/mp3">
+      </audio>
+    </div>
+    {% if request.user.pk == song.artist.pk %}
+    <div class="mt-5 ms-4">
+    <a href="{% url 'player:update_song' song.slug_artist song.slug_song %}" class="btn btn-outline-danger">Edit</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

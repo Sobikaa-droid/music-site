@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}Edit {{ playlist.title }}{% endblock %}
+{% block content %}
+{% load widget_tweaks %}
+<div class="container mt-5 mb-5 w-50" data-bs-theme="dark">
+  <div class="user_detail">
+    <div class="d-flex flex-wrap justify-content-center">
+      <div class="image_detail mt-5 mb-5">
+        <img src="{% if playlist.image %}{{ playlist.image.url }}{% else %}{{ default_image_url }}{% endif %}" class="user_detail_image song_image" alt="playlist_img">
+      </div>
+      <div class='user_detail_info ms-5 w-50 mt-5 mb-5'>
+        <form method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          {% for field in form %}
+          <div class="mb-3">
+            <label class="form-label text-danger">{{ field.label_tag }}</label>
+            {% render_field field class="form-control" placeholder=field.label %}
+            <div class="form-text text-danger">{{ field.help_text }}</div>
+          </div>
+          {% endfor %}
+          <button id='save_album' style="visibility: hidden;" type="submit">Save</button>
+        </form>
+        <div class="d-flex">
+          <button class="btn btn-outline-secondary me-auto" onclick="document.getElementById('save_album').click();">Save</button>
+          <a href='#' class="btn btn-cart_delete btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modal-delete-album">
+          Delete
+          </a>
+          <!-- Modal Clear Cart -->
+          <div class="modal fade" id="modal-delete-album" tabindex="-1" aria-labelledby="DeleteModalLabel" aria-hidden="true" data-bs-theme="dark">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title text-danger" id="ClearCartModalLabel">Confirmation</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <p class='text-light'>Are you sure you want to delete {{ playlist.title }}?</p>
+                </div>
+                <div class="modal-footer">
+                  <form method="POST" action="{% url 'player:delete_playlist' playlist.pk %}"> {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-danger" id="delete_user">Delete</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- ############ -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% load static %}
+<div id="bottom_audio" class="fixed-bottom" style="visibility: hidden;">
+  <div class="container">
+    <div class="range mt-2">
+      <label for="progressSlider"></label><input type="range" id="progressSlider" min="0" max="100" step="any" value="0">
+    </div>
+    <div class="d-flex align-middle mb-3 mt-2">
+      <img id="bottom_audio_image" src="" width="60" height="60" class="me-3 song_image" alt="song_image">
+      <div class="me-auto">
+        <h5 id="bottom_audio_title" class="text-light">None</h5>
+        <h6 id="bottom_audio_artist" class="text-muted">Jane</h6>
+      </div>
+      <div class="d-flex">
+        <!-- Mute checkbox -->
+        <h5 class="mt-3 me-3"><a href="#" class='link link-danger' id="muteButton"><i class="fa-solid fa-volume-high"></i></a></h5>
+        <!-- Volume slider -->
+        <div class="range mt-3">
+          <label for="volumeSlider"></label><input type="range" id="volumeSlider" min="0" max="1" step="any" value="1">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="{% static 'bottom_player.js' %}"></script>

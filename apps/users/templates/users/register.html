@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}Register{% endblock %}
+{% block content %}
+{% load widget_tweaks %}
+<div class="container mt-5 d-flex justify-content-center user_form" data-bs-theme="dark">
+  <div class="mt-5">
+    <h1 class="mb-3 text-center">Sign Up</h1>
+    <form method="POST">
+      {% csrf_token %}
+      {% for field in form %}
+      <div class="mb-3">
+        <!-- <label class="form-label">{{ field.label_tag }}</label> -->
+        {% render_field field class="form-control" placeholder=field.label %}
+        <div class="form-text">
+          {{ field.help_text }}
+        </div>
+      </div>
+      {% endfor %}
+      <button class="btn btn-outline-danger w-100" type="submit">Submit</button>
+    </form>
+    <div class="text-center mt-3 mb-3">
+      <span class="text-muted">Already have an account?</span>
+      <a class='text-decoration-none link-danger' href="{% url 'users:login' %}">Log In</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

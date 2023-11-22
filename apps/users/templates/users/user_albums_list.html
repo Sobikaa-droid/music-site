@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block title %}{{ user.username }} albums{% endblock %}
+{% block content %}
+{% load static %}
+{% load widget_tweaks %}
+<div class="container mt-5 mb-5 w-50" data-bs-theme="dark">
+  <div class="bd-masthead" id="content">
+    <div class="d-flex flex-wrap justify-content-center">
+      <div class="image_detail mt-5 mb-5">
+        <img class="user_image user_detail_list_image" src="{% if user.image %}{{ user.image.url }}{% else %}{{ default_image_url }}{% endif %}" alt="user_img">
+      </div>
+      <div class='user_detail_info ms-5 w-50 mt-5 mb-5'>
+        <div class="d-flex">
+          <a class="text-decoration-none" href="{{ user.get_absolute_url }}">
+            <h1 class="flex-grow-1">{{ user.username }} {% if user.verified %}<i class="fa-solid fa-check text-danger"></i>{% endif %}</h1>
+          </a>
+        </div>
+        <hr class="text-danger">
+        <p class="page_description text-secondary lh-base text-break">
+          {{ user.description|striptags|truncatechars:200 }}
+          {% if user.description|length >= 201 %}
+          <a class="link-danger text-decoration-none" href="#" role="button" data-bs-toggle="modal" data-bs-target="#modal-show-description">
+          Read Full
+          </a>
+          {% endif %}
+        </p>
+        {% if user.description|length >= 201 %}
+        <!-- Modal Show Description -->
+        <div class="modal fade" id="modal-show-description" tabindex="-1" aria-labelledby="DescriptionModalLabel" aria-hidden="true" data-bs-theme="dark">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title text-danger" id="ClearCartModalLabel">Description</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <p class="text-light text-break">{{ user.description }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- ############ -->
+        {% endif %}
+      </div>
+    </div>
+    <ul class="nav nav-underline justify-content-center">
+      <li class="nav-item">
+        <a class="nav-link {% if request.path == '/u/'|add:user.slug|add:'/songs/' %} active {% endif %} link-danger me-3" aria-current="page" href="{% url 'users:user_songs' user.slug %}">
+          <h5>Songs</h5>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {% if request.path == '/u/'|add:user.slug|add:'/albums/' %} active {% endif %} link-danger me-3" href="{% url 'users:user_albums' user.slug %}">
+          <h5>Albums</h5>
+        </a>
+      </li>
+    </ul>
+    <div class="row mb-5 mt-4 card_row">
+      {% for album in albums %}
+      <div class="col-lg-3 text-center card_main mb-5">
+        <a href="{{ album.get_absolute_url }}" class="card_image_link text-decoration-none">
+          <img src="{{ album.image.url }}" class="card_image mb-2 mt-2">
+          <h5 class="fw-normal text-white">{{ album.title }}</h5>
+        </a>
+        <h6 class="text-secondary">{{ album.artist }}</h6>
+      </div>
+      {% empty %}
+      <h4 class="text-danger mt-3 mb-3 text-center">No results found</h4>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% include 'pagination.html' %}
+{% endblock %}

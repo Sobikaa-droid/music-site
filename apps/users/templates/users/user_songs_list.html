@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% block title %}{{ user.username }} songs{% endblock %}
+{% block content %}
+{% load static %}
+{% load widget_tweaks %}
+<div class="container mt-5 mb-5 w-50" data-bs-theme="dark">
+  <div class="bd-masthead" id="content">
+    <div class="d-flex flex-wrap justify-content-center">
+      <div class="image_detail mt-5 mb-5">
+        <img class="user_image user_detail_list_image" src="{% if user.image %}{{ user.image.url }}{% else %}{{ default_image_url }}{% endif %}" alt="user_img">
+      </div>
+      <div class='user_detail_info ms-5 w-50 mt-5 mb-5'>
+        <div class="d-flex">
+          <a class="text-decoration-none" href="{{ user.get_absolute_url }}">
+            <h1 class="flex-grow-1">{{ user.username }} {% if user.verified %}<i class="fa-solid fa-check text-danger"></i>{% endif %}</h1>
+          </a>
+        </div>
+        <hr class="text-danger">
+        <p class="page_description text-secondary lh-base text-break">
+          {{ user.description|striptags|truncatechars:200 }}
+          {% if user.description|length >= 201 %}
+          <a class="link-danger text-decoration-none" href="#" role="button" data-bs-toggle="modal" data-bs-target="#modal-show-description">
+          Read Full
+          </a>
+          {% endif %}
+        </p>
+        {% if user.description|length >= 201 %}
+        <!-- Modal Show Description -->
+        <div class="modal fade" id="modal-show-description" tabindex="-1" aria-labelledby="DescriptionModalLabel" aria-hidden="true" data-bs-theme="dark">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title text-danger" id="ClearCartModalLabel">Description</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <p class="text-light text-break">{{ user.description }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- ############ -->
+        {% endif %}
+      </div>
+    </div>
+    <ul class="nav nav-underline justify-content-center">
+      <li class="nav-item">
+        <a class="nav-link {% if request.path == '/u/'|add:user.slug|add:'/songs/' %} active {% endif %} link-danger me-3" aria-current="page" href="{% url 'users:user_songs' user.slug %}">
+          <h5>Songs</h5>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {% if request.path == '/u/'|add:user.slug|add:'/albums/' %} active {% endif %} link-danger me-3" href="{% url 'users:user_albums' user.slug %}">
+          <h5>Albums</h5>
+        </a>
+      </li>
+    </ul>
+    <div class="list-group mb-5 mt-4">
+      {% for song in songs %}
+      <div class="list-group-item">
+        <div class="d-flex align-middle">
+          <img id="image{{ song.pk }}" src="{{ song.image.url }}" width="60" height="60" class="me-3 song_image" alt="song_image">
+          <div class="me-auto">
+            <a class="text-decoration-none link-light" href="{{ song.get_absolute_url }}">
+              <h5 id="title{{ song.pk }}" class="mb-1 mt-1 text-light">
+                {{ song.title }}
+            <a href="{% url 'player:save_song' song.pk %}">{% if song.is_saved %}<i class="fa-solid fa-heart text-danger"></i>{% else %}<i class="fa-regular fa-heart text-danger"></i>{% endif %}</a>
+            </h5>
+            </a>
+            <a class="text-decoration-none" href="{{ song.artist.get_absolute_url }}">
+              <h6 id="artist{{ song.pk }}" class="text-muted">{{ song.artist }}</h6>
+            </a>
+            <audio id="{{ song.pk }}" style="width: 100%;">
+              <source src="{% if song.audio_link %}{{ song.audio_link }}{% else %}{{ song.audio_file.url }}{% endif %}" type="audio/mp3">
+            </audio>
+          </div>
+          <h5 class="mt-3 me-3"><a href='#' id="playButton{{ song.pk }}" class='link link-danger' onclick="playPauseAudio('{{ song.pk }}', this)"><i class="fa-solid fa-play"></i></a></h5>
+        </div>
+      </div>
+      {% empty %}
+      <h4 class="text-danger mt-3 mb-3 text-center">No results found</h4>
+      {% endfor %}
+    </div>
+  </div>
+  {% include 'bottom_audio.html' %}
+</div>
+{% include 'pagination.html' %}
+{% endblock %}

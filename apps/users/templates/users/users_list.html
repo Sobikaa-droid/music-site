@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}Artists{% endblock %}
+{% block content %}
+<div class="grey_container" data-bs-theme="dark">
+  <div class="container mt-5 mb-5 w-50">
+    <div class="bd-masthead mt-5" id="content">
+      <div class="d-flex mb-4">
+        <div class="dropdown me-auto">
+          <button class="btn btn btn-outline-danger dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          Sort
+          </button>
+          <ul class="dropdown-menu">
+            <li><a href="{% url 'users:users' %}?order_by=username" class="dropdown-item">Name</a></li>
+          </ul>
+        </div>
+        <form method="GET" action="{% url 'users:users' %}" class="input-group w-25">
+          <input type="text" name="search_val" class="form-control" placeholder="Name" aria-label="Name" aria-describedby="button-addon2">
+          <button class="btn btn-danger" type="submit" id="button-addon2"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+        </form>
+      </div>
+      <div class="list-group mb-5 mt-5">
+        {% for user in users %}
+        <a href="{{ user.get_absolute_url }}" class="list-group-item list-group-item-action">
+          <div class="d-flex align-middle">
+            <img src="{% if user.image %}{{ user.image.url }}{% else %}{{ default_image_url }}{% endif %}" width="60" height="60" class="me-3 user_image">
+            <div class="me-auto">
+              <h5 class="mb-1 mt-1 text-light">{{ user.username }} {% if user.verified %}<i class="fa-solid fa-check text-danger"></i>{% endif %}</h5>
+              <small class="text-muted">{{ user.description|striptags|truncatechars:50 }}</small>
+            </div>
+            <h4 class="mt-2"><span class="badge rounded-pill bg-orange">{{ user.song_count }} song{{ user.song_count|pluralize }}</span></h4>
+          </div>
+        </a>
+        {% empty %}
+        <h4 class="text-danger mt-3 mb-3 text-center">No results found</h4>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% include 'pagination.html' %}
+{% endblock %}

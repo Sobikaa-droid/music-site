@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% block title %}{{ user.username }}{% endblock %}
+{% block content %}
+{% load widget_tweaks %}
+<div class="container mt-5" data-bs-theme="dark">
+  <div class="user_detail">
+    <div class="d-flex flex-wrap justify-content-center">
+      <div class="image_detail mt-5 mb-5">
+        <img class="user_image user_detail_image" src="{% if user.image %}{{ user.image.url }}{% else %}{{ default_image_url }}{% endif %}" alt="user_img">
+      </div>
+      <div class='user_detail_info ms-5 w-50 mt-5 mb-5'>
+        <div class="d-flex">
+          <h1 class="flex-grow-1">{{ user.username }} {% if user.verified %}<i class="fa-solid fa-check text-danger"></i>{% endif %}</h1>
+          {% if request.user.pk == user.pk %}
+          <a class="btn btn-outline-danger" href="{% url 'users:user_update' request.user.pk %}">Edit</a>
+          {% endif %}
+        </div>
+        <hr class="text-danger">
+        <p class="page_description text-secondary lh-base text-break">
+          {{ user.description|striptags|truncatechars:500 }}
+          {% if user.description|length >= 501 %}
+          <a class="link-danger text-decoration-none" href="#" role="button" data-bs-toggle="modal" data-bs-target="#modal-show-description">
+          Read Full
+          </a>
+          {% endif %}
+        </p>
+        {% if user.description|length >= 501 %}
+        <!-- Modal Show Description -->
+        <div class="modal fade" id="modal-show-description" tabindex="-1" aria-labelledby="DescriptionModalLabel" aria-hidden="true" data-bs-theme="dark">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title text-danger" id="ClearCartModalLabel">Description</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <p class="text-light text-break">{{ user.description }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- ############ -->
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-lg-6">
+      <div class="bd-masthead mt-5">
+        <h2 class="text-center text-danger">Songs</h2>
+        <div class="list-group mb-5 mt-5 bg_gradient_red">
+          {% if songs_count %}
+          <div class="mt-2 mb-2">
+          {% for song in songs|slice:":3" %}
+          <div class="list-group-item d-flex">
+            <div class="d-flex align-middle">
+              <img id="image{{ song.pk }}" src="{{ song.image.url }}" width="60" height="60" class="me-3 song_image" alt="song_image">
+              <div class="me-auto">
+                <a class="text-decoration-none" href="{{ song.get_absolute_url }}">
+                  <h5 id="title{{ song.pk }}" class="mb-1 mt-1 text-light">{{ song.title }}</h5>
+                </a>
+                <h6 id="artist{{ song.pk }}" class="text-muted">{{ user.username }}</h6>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+          </div>
+          {% endif %}
+          {% if songs_count > 3 %}
+          <hr class="text-danger">
+          <h5 class="text-center mb-3"><a class="link link-danger text-decoration-none" href="{% url 'users:user_songs' user.slug %}">See all {{ songs_count }}</a></h5>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="bd-masthead mt-5">
+        <h2 class="text-center text-danger">Albums</h2>
+        <div class="list-group mb-5 mt-5 bg_gradient_red">
+          {% if albums_count %}
+          <div class="mt-2 mb-2">
+          {% for album in albums|slice:":3" %}
+          <div class="list-group-item d-flex">
+            <div class="d-flex align-middle">
+              <img id="image{{ album.pk }}" src="{{ album.image.url }}" width="60" height="60" class="me-3 song_image" alt="album_image">
+              <div class="me-auto">
+                <a class="text-decoration-none" href="{{ album.get_absolute_url }}">
+                  <h5 id="title{{ album.pk }}" class="mb-1 mt-1 text-light">{{ album.title }}</h5>
+                </a>
+                <h6 id="artist{{ album.pk }}" class="text-muted">{{ user.username }}</h6>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+          </div>
+          {% endif %}
+          {% if albums_count > 3 %}
+          <hr class="text-danger">
+          <h5 class="text-center mb-3"><a class="link link-danger text-decoration-none" href="#">See all {{ albums_count }}</a></h5>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

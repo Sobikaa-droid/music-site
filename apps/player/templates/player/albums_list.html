@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Albums{% endblock %}
+{% block content %}
+<div class="grey_container" data-bs-theme="dark">
+  <div class="container mt-5 mb-5 w-50">
+    <div class="bd-masthead mt-5" id="content">
+      <div class="d-flex mb-4">
+        <div class="dropdown me-auto">
+          <button class="btn btn btn-outline-danger dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          Sort
+          </button>
+          <ul class="dropdown-menu">
+            <li><a href="{% url 'player:albums' %}?order_by=title" class="dropdown-item">Title</a></li>
+            <li><a href="{% url 'player:albums' %}?order_by=artist" class="dropdown-item">Artist</a></li>
+            <li><a href="{% url 'player:albums' %}?order_by=-pk" class="dropdown-item">New First</a></li>
+            <li><a href="{% url 'player:albums' %}?order_by=pk" class="dropdown-item">Old First</a></li>
+          </ul>
+        </div>
+        <form method="GET" action="{% url 'player:albums' %}" class="input-group w-25">
+          <input type="text" name="search_val" class="form-control" placeholder="Name" aria-label="Name" aria-describedby="button-addon2">
+          <button class="btn btn-danger" type="submit" id="button-addon2"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+        </form>
+      </div>
+      <div class="row mb-5 mt-5 card_row">
+          {% for album in albums %}
+          <div class="col-lg-3 text-center card_main mb-5">
+             <a href="{{ album.get_absolute_url }}" class="card_image_link text-decoration-none">
+             <img src="{{ album.image.url }}" class="card_image mb-2 mt-2">
+             <h5 class="fw-normal text-white">{{ album.title }}</h5>
+             </a>
+             <h6 class="text-secondary">{{ album.artist }}</h6>
+          </div>
+          {% empty %}
+          <h4 class="text-danger mt-3 mb-3 text-center">No results found</h4>
+          {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% include 'pagination.html' %}
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}My Saved Songs{% endblock %}
+{% block content %}
+<div class="grey_container" data-bs-theme="dark">
+  <div class="container w-50">
+    <div class="bd-masthead mt-5" id="content">
+      <div class="d-flex mb-4">
+        <div class="dropdown">
+          <button class="btn btn btn-outline-danger dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          Sort
+          </button>
+          <ul class="dropdown-menu">
+            <li><a href="{% url 'player:saved_songs' %}?order_by=song__title" class="dropdown-item">Title</a></li>
+            <li><a href="{% url 'player:saved_songs' %}?order_by=song__artist" class="dropdown-item">Artist</a></li>
+            <li><a href="{% url 'player:saved_songs' %}?order_by=-pk" class="dropdown-item">New First</a></li>
+            <li><a href="{% url 'player:saved_songs' %}?order_by=pk" class="dropdown-item">Old First</a></li>
+          </ul>
+        </div>
+        <h5 class="text-danger ms-3 mt-1">{{ qs_count }} result{{ qs_count|pluralize }} for saved songs</h5>
+        <form method="GET" action="{% url 'player:saved_songs' %}" class="input-group ms-auto w-25">
+          <input type="text" name="search_val" class="form-control" placeholder="Name" aria-label="Name" aria-describedby="button-addon2">
+          <button class="btn btn-danger" type="submit" id="button-addon2"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+        </form>
+      </div>
+      <div class="list-group mb-5 mt-5">
+        {% for saved_song in saved_songs %}
+        <div class="list-group-item">
+          <div class="d-flex align-middle">
+            <img id="image{{ saved_song.pk }}" src="{{ saved_song.song.image.url }}" width="60" height="60" class="me-3 song_image" alt="song_image">
+            <div class="me-auto">
+              <a class="text-decoration-none link-light" href="{{ saved_song.song.get_absolute_url }}">
+                <h5 id="title{{ saved_song.pk }}" class="mb-1 mt-1 text-light">{{ saved_song.song.title }} <a href="{% url 'player:save_song' saved_song.song.pk %}"><i class="fa-solid fa-heart text-danger"></i></a></h5>
+              </a>
+              <a class="text-decoration-none" href="{{ song.artist.get_absolute_url }}">
+              <h6 id="artist{{ saved_song.pk }}" class="text-muted">{{ saved_song.song.artist }}</h6>
+              </a>
+              <audio id="{{ saved_song.pk }}" style="width: 100%;">
+                <source src="{% if saved_song.song.audio_link %}{{ saved_song.song.audio_link }}{% else %}{{ saved_song.song.audio_file.url }}{% endif %}" type="audio/mp3">
+              </audio>
+            </div>
+            <h5 class="mt-3 me-3"><a href='#' id="playButton{{ saved_song.pk }}" class='link link-danger' onclick="playPauseAudio('{{ saved_song.pk }}', this)"><i class="fa-solid fa-play"></i></a></h5>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% include 'bottom_audio.html' %}
+  </div>
+</div>
+{% include 'pagination.html' %}
+{% endblock %}

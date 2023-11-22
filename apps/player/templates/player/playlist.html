@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ playlist.title }}{% endblock %}
+{% block content %}
+{% load widget_tweaks %}
+<div class="container mt-5 w-50" data-bs-theme="dark">
+  <div class="user_detail justify-content-center d-flex">
+    <div>
+      <div class="d-flex">
+        <div class="image_detail mt-5 mb-5">
+          <img src="{% if playlist.image %}{{ playlist.image.url }}{% else %}{{ default_image_url }}{% endif %}" class="user_detail_image song_image" alt="playlist_img">
+        </div>
+        <div class='user_detail_info ms-5 w-50 mt-5 mb-5'>
+          <div class="d-flex">
+            <h1 class="flex-grow-1 me-5">{{ playlist.title }}</h1>
+            <p class="text-danger">{{ playlist.last_update_date|date:"d.m.Y" }}</p>
+          </div>
+          <a class="text-decoration-none" href="{{ playlist.user.get_absolute_url }}">
+          <h5 class="flex-grow-1 text-muted mt-2">{{ playlist.user.username }}</h5>
+          </a>
+          <hr class="text-danger">
+          <p class="page_description text-secondary lh-base text-break">
+            {{ playlist.description|striptags|truncatechars:300 }}
+            {% if playlist.description|length >= 301 %}
+            <a class="link-danger text-decoration-none" href="#" role="button" data-bs-toggle="modal" data-bs-target="#modal-show-description">
+            Read Full
+            </a>
+            {% endif %}
+          </p>
+          {% if request.user.pk == playlist.user.pk %}
+          <a href="{% url 'player:update_playlist' playlist.pk %}" class="btn btn-outline-danger">Edit</a>
+          {% endif %}
+          {% if playlist.description|length >= 301 %}
+          <!-- Modal Show Description -->
+          <div class="modal fade" id="modal-show-description" tabindex="-1" aria-labelledby="DescriptionModalLabel" aria-hidden="true" data-bs-theme="dark">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title text-danger" id="ClearCartModalLabel">Description</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <p class="text-light text-break">{{ playlist.description }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- ############ -->
+          {% endif %}
+        </div>
+      </div>
+      <div class="list-group mb-5 list-group-numbered" style="box-shadow: none;">
+        {% for saved_song in playlist.songs.all %}
+        <div class="list-group-item d-flex align-items-md-center">
+          <div class="d-flex align-middle ms-4 me-auto">
+            <img id="image{{ saved_song.pk }}" src="{{ saved_song.song.image.url }}" width="60" height="60" class="me-3 song_image" alt="song_image">
+            <div>
+              <a class="text-decoration-none" href="{{ saved_song.song.get_absolute_url }}">
+                <h5 id="title{{ saved_song.pk }}" class="mb-1 mt-1 text-light">{{ saved_song.song.title }}</h5>
+              </a>
+              <h6 id="artist{{ saved_song.pk }}" class="text-muted">{{ playlist.user.username }}</h6>
+              <audio id="{{ saved_song.pk }}" style="width: 100%;">
+                <source src="{% if saved_song.song.audio_link %}{{ saved_song.song.audio_link }}{% else %}{{ saved_song.song.audio_file.url }}{% endif %}" type="audio/mp3">
+              </audio>
+            </div>
+          </div>
+          <h5><a href='#' id="playButton{{ saved_song.pk }}" class='link link-danger' onclick="playPauseAudio('{{ saved_song.pk }}', this)"><i class="fa-solid fa-play"></i></a></h5>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  {% include 'bottom_audio.html' %}
+</div>
+{% endblock %}

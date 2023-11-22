@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Songs{% endblock %}
+{% block content %}
+<div class="grey_container" data-bs-theme="dark">
+  <div class="container mt-5 mb-5 w-50">
+    <div class="bd-masthead mt-5" id="content">
+      <div class="d-flex mb-4">
+        <div class="dropdown me-auto">
+          <button class="btn btn btn-outline-danger dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          Sort
+          </button>
+          <ul class="dropdown-menu">
+            <li><a href="{% url 'player:songs' %}?order_by=title" class="dropdown-item">Name</a></li>
+            <li><a href="{% url 'player:songs' %}?order_by=artist" class="dropdown-item">Artist</a></li>
+            <li><a href="{% url 'player:songs' %}?order_by=-pk" class="dropdown-item">New First</a></li>
+            <li><a href="{% url 'player:songs' %}?order_by=pk" class="dropdown-item">Old First</a></li>
+          </ul>
+        </div>
+        <form method="GET" action="{% url 'player:songs' %}" class="input-group w-25">
+          <input type="text" name="search_val" class="form-control" placeholder="Name" aria-label="Name" aria-describedby="button-addon2">
+          <button class="btn btn-danger" type="submit" id="button-addon2"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+        </form>
+      </div>
+      <div class="list-group mb-5 mt-5">
+        {% for song in songs %}
+        <div class="list-group-item">
+          <div class="d-flex align-middle">
+            <img id="image{{ song.pk }}" src="{{ song.image.url }}" width="60" height="60" class="me-3 song_image" alt="song_image">
+            <div class="me-auto">
+              <a class="text-decoration-none link-light" href="{{ song.get_absolute_url }}">
+                <h5 id="title{{ song.pk }}" class="mb-1 mt-1 text-light">
+                  {{ song.title }}
+              <a href="{% url 'player:save_song' song.pk %}">{% if song.is_saved %}<i class="fa-solid fa-heart text-danger"></i>{% else %}<i class="fa-regular fa-heart text-danger"></i>{% endif %}</a>
+              </h5>
+              </a>
+              <a class="text-decoration-none" href="{{ song.artist.get_absolute_url }}">
+                <h6 id="artist{{ song.pk }}" class="text-muted">{{ song.artist }}</h6>
+              </a>
+              <audio id="{{ song.pk }}" style="width: 100%;">
+                <source src="{% if song.audio_link %}{{ song.audio_link }}{% else %}{{ song.audio_file.url }}{% endif %}" type="audio/mp3">
+              </audio>
+            </div>
+            <h5 class="mt-3 me-3"><a href='#' id="playButton{{ song.pk }}" class='link link-danger' onclick="playPauseAudio('{{ song.pk }}', this)"><i class="fa-solid fa-play"></i></a></h5>
+          </div>
+        </div>
+        {% empty %}
+        <h4 class="text-danger mt-3 mb-3 text-center">No results found</h4>
+        {% endfor %}
+      </div>
+    </div>
+    {% include 'bottom_audio.html' %}
+  </div>
+</div>
+{% include 'pagination.html' %}
+{% endblock %}

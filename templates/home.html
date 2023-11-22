@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+
+<div class="grey_container" data-bs-theme="dark">
+  <div class='gradient_bar text-center'>
+  </div>
+  <div class="container">
+    <div class="bd-masthead" id="content">
+
+      <div class="text-center mt-5" id='home_content'>
+        <h1 style='font-size: 3rem;'>Welcome{% if request.user.is_authenticated %}, {{ request.user.username }}{% endif %}</h1>
+        <div class='container w-75 mt-2'>
+          <p class='text-break text-secondary'>Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source.</p>
+        </div>
+        {% if request.user.is_authenticated %}
+        <a role="button" class="btn btn-outline-danger btn-lg" href="{% url 'player:songs' %}">Browse Music</a>
+        {% else %}
+        <a role="button" class="btn btn-outline-danger btn-lg" href="{% url 'users:register' %}">Get Started</a>
+        {% endif %}
+      </div>
+
+      <div class="row row-cols-1 row-cols-lg-3 text-center cards_row">
+
+      <div class="col card_col">
+        <div class="card create_card">
+          <a class="text-decoration-none" href="{% url 'player:create_song' %}">
+          <div class="card-body">
+            <i class="fa-solid fa-arrow-up-from-bracket fa_cards"></i>
+            <h1 class="card-title mt-3 text-danger">Upload</h1>
+          </div>
+          </a>
+        </div>
+      </div>
+
+      <div class="col card_col">
+        <div class="card edit_card">
+          <a class="text-decoration-none" href="{% url 'player:songs' %}">
+          <div class="card-body">
+            <i class="fa-solid fa-music fa_cards"></i>
+            <h1 class="card-title mt-3 text-danger">Songs</h1>
+          </div>
+          </a>
+        </div>
+      </div>
+
+      <div class="col card_col">
+        <div class="card complete_card">
+          <a class="text-decoration-none" href="{% url 'users:users' %}">
+          <div class="card-body">
+            <i class="fa-solid fa-user fa_cards"></i>
+            <h1 class="card-title mt-3 text-danger">Artists</h1>
+          </div>
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}
